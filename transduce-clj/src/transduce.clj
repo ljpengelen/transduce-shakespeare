@@ -1,4 +1,4 @@
-(ns transduce 
+(ns transduce
   (:require
    [clojure.core.async :refer [<!! >!! chan close!]]
    [clojure.core.protocols :as protocols]
@@ -11,7 +11,7 @@
 
 (->> (range)
      (filter even?)
-     (drop 5) 
+     (drop 5)
      (take 5))
 
 ;; Evaluates to a vector containing the five even numbers after the first five.
@@ -35,12 +35,12 @@
   (take 5))
  (range))
 
- (comment
+(comment
   (def limit 5000000000)
-  
+
   (let [r (range limit)]
     [(last r) (first r)])
-  
+
   (let [r (eduction (range limit))]
     [(last r) (first r)]))
 
@@ -129,10 +129,10 @@
 (defn transduce-all
   ([xform f init & colls]
    (let [f (xform f)]
-         (for [coll colls
-               :let [ret (if (instance? clojure.lang.IReduceInit coll)
-                           (.reduce ^clojure.lang.IReduceInit coll f init)
-                           (protocols/coll-reduce coll f init))]]
-           (f ret)))))
+     (for [coll colls
+           :let [ret (if (instance? clojure.lang.IReduceInit coll)
+                       (.reduce ^clojure.lang.IReduceInit coll f init)
+                       (protocols/coll-reduce coll f init))]]
+       (f ret)))))
 
 (transduce-all strings-to-the-back conj [] ["1" 2 "3"] [4 "5" 6] ["7" "8" 9])
