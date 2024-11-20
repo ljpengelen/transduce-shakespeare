@@ -36,7 +36,7 @@
  (range))
 
 (comment
-  (def limit 5000000000)
+  (def limit 3e7)
 
   (let [r (range limit)]
     [(last r) (first r)])
