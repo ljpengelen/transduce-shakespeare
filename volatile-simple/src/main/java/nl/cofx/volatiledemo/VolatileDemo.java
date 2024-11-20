@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
  * <code>STOP_RUNNING_VOLATILE</code> changes. The other runnable will not terminate when the value of
  * <code>STOP_RUNNING_NON_VOLATILE</code> changes.
  */
-public class Main {
+public class VolatileDemo {
 
     private static volatile boolean STOP_RUNNING_VOLATILE;
     private static boolean STOP_RUNNING_NON_VOLATILE;
@@ -36,7 +36,6 @@ public class Main {
             Thread.sleep(10);
             STOP_RUNNING_VOLATILE = true;
             STOP_RUNNING_NON_VOLATILE = true;
-
         }
     }
 }
