@@ -1,0 +1,21 @@
+plugins {
+    id "io.github.reyerizo.gradle.jcstress" version "0.8.15"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+jcstress {
+    verbose = true
+    timeMillis = "200"
+    iterations = 1
+    forks = 1
+}
