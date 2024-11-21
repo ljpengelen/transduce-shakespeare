@@ -121,13 +121,12 @@
 
 (into [] strings-to-the-back (strings-and-numbers 10))
 
-(let [c (chan 3 strings-to-the-back)
-      v []]
+(let [c (chan 3 strings-to-the-back)]
   (>!! c 1)
   (>!! c "2")
   (>!! c 3)
   (close! c)
-  (-> v
+  (-> []
       (conj (<!! c))
       (conj (<!! c))
       (conj (<!! c))))
