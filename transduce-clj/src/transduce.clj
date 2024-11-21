@@ -64,6 +64,27 @@
 (transduce (drop-nth 2) conj [1 2 3 4 5 6 7 8])
 (transduce (take-nth 2) conj [1 2 3 4 5 6 7 8])
 
+;; An alternative implementation using an atom for local state
+
+(defn drop-nth-atom [n]
+  (fn [rf]
+    (let [nv (atom -1)]
+      (fn
+        ([] (rf))
+        ([result] (rf result))
+        ([result input]
+         (let [i (swap! nv inc)]
+           (if (zero? (rem i n))
+             result
+             (rf result input))))))))
+
+;; Benchmarking the two alternatives
+
+(comment
+  (quick-bench (into [] (drop-nth 2) (range 1e3)))
+
+  (quick-bench (into [] (drop-nth-atom 2) (range 1e3))))
+
 ;; A custom stateful transducer that holds back all inputs of type string
 ;; and produces those strings once all non-string input has been processed:
 
