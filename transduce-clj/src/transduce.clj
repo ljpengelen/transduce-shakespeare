@@ -99,7 +99,7 @@
                       (let [v (vec strings)]
                         (.clear strings)
                         (vreset! stringsv strings)
-                        (unreduced (reduce rf result v))))]
+                        (reduce rf result v)))]
          (rf result)))
       ([result input]
        (let [^java.util.ArrayList strings @stringsv]
