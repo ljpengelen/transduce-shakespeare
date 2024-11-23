@@ -232,3 +232,35 @@
  (limited-conj 6)
  []
  [1 2 3 4 5 6])
+
+;; Another reducing function that terminates early, taken from
+;; https://clojuredocs.org/clojure.core/unreduced#example-64458dd4e4b08cf8563f4b96:
+
+(defn conj-till-odd
+  ([coll] coll)
+  ([coll x] (cond-> (conj coll x)
+              (odd? x) reduced)))
+
+;; A transducer that adds the last processed input value to the output:
+
+(defn repeat-last [rf]
+  (let [pv (volatile! nil)]
+    (fn
+      ([] (rf))
+      ([result]
+       (if-let [p @pv]
+         (unreduced (rf result p))
+         (rf result)))
+      ([result input]
+       (let [result (rf result input)]
+         (vreset! pv input)
+         result)))))
+
+;; Evaluate the folloing expression with and without the call to unreduced
+;; in repeat-last.
+
+(transduce
+ repeat-last
+ conj-till-odd
+ []
+ [2 4 3 2])
