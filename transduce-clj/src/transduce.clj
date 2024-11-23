@@ -209,7 +209,7 @@
 
 (transduce
  broken-stutter
- (limited-conj 5)
+ (limited-conj 6)
  []
  [1 2 3 4 5 6])
 
@@ -229,6 +229,6 @@
 
 (transduce
  stutter
- (limited-conj 7)
+ (limited-conj 6)
  []
  [1 2 3 4 5 6])
