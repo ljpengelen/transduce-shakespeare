@@ -256,7 +256,7 @@
          (vreset! pv input)
          result)))))
 
-;; Evaluate the folloing expression with and without the call to unreduced
+;; Evaluate the following expression with and without the call to unreduced
 ;; in repeat-last.
 
 (transduce
