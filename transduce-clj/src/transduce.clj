@@ -64,7 +64,7 @@
 (transduce (drop-nth 2) conj [1 2 3 4 5 6 7 8])
 (transduce (take-nth 2) conj [1 2 3 4 5 6 7 8])
 
-;; An alternative implementation using an atom for local state
+;; An alternative implementation using an atom for local state:
 
 (defn drop-nth-atom [n]
   (fn [rf]
@@ -78,7 +78,7 @@
              result
              (rf result input))))))))
 
-;; Benchmarking the two alternatives
+;; Benchmarking the two alternatives:
 
 (comment
   (quick-bench (into [] (drop-nth 2) (range 1e3)))
@@ -156,3 +156,79 @@
        (f ret)))))
 
 (transduce-all strings-to-the-back conj [] ["1" 2 "3"] [4 "5" 6] ["7" "8" 9])
+
+;; Some reducing function will terminate early instead of processing the entire input.
+;; This reduction function will terminate after processing a single value:
+
+(defn highlander-rf
+  "There can be only one"
+  [_ input] (reduced input))
+
+(reduce highlander-rf nil [1 2 3 4])
+
+;; This transducer will also stop processing items after the first one:
+
+(defn highlander-tr
+  "There can be only one"
+  [rf]
+  (fn
+    ([] (rf))
+    ([result] (rf result))
+    ([result input] (ensure-reduced (rf result input)))))
+
+(into []
+      highlander-tr
+      [1 2 3 4])
+
+;; The following transducer outputs each value it receives as input twice,
+;; but it is broken.
+
+(defn broken-stutter [rf]
+  (fn
+    ([] (rf))
+    ([result] (rf result))
+    ([result input]
+     (rf (rf result input) input))))
+
+(transduce
+ broken-stutter
+ conj
+ []
+ [1 2 3 4 5 6])
+
+;; Using the transducer above with the following reduction function,
+;; which terminates early, shows that the transducer is broken.
+
+(defn limited-conj [n]
+  (fn 
+    ([result] result)
+    ([result input]
+     (if (>= (count result) n)
+       (reduced result)
+       (conj result input)))))
+
+(transduce
+ broken-stutter
+ (limited-conj 5)
+ []
+ [1 2 3 4 5 6])
+
+;; The following version of stutter is not broken. It does not call
+;; the reducing function once this function has returned a
+;; reduced value.
+
+(defn stutter [rf]
+  (fn
+    ([] (rf))
+    ([result] (rf result))
+    ([result input]
+     (let [intermediate (rf result input)]
+       (if (reduced? intermediate)
+         intermediate
+         (rf intermediate input))))))
+
+(transduce
+ stutter
+ (limited-conj 7)
+ []
+ [1 2 3 4 5 6])
